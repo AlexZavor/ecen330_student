@@ -61,7 +61,7 @@ void piece_init(piece *piece, enum blocktype setShape, int start_x,
   }
 }
 
-bool piece_tick(piece *piece, uint8_t add_x, uint8_t add_y) {
+bool piece_tick(piece *piece, int8_t add_x, int8_t add_y) {
   // erase previous shape
   piece_drawPiece(piece, true);
   // collisoin check
@@ -74,12 +74,13 @@ bool piece_tick(piece *piece, uint8_t add_x, uint8_t add_y) {
     // Updated into a wall. Just don't do anything
     piece_drawPiece(piece, false);
     return 1;
-  } else {
+  } else if (collide == 0) {
     piece->x += add_x;
     piece->y += add_y;
     // place new shape
-    printf("test\n");
     piece_drawPiece(piece, false);
+  } else {
+    printf("Error\n");
   }
   return 1;
 }
@@ -87,20 +88,19 @@ bool piece_tick(piece *piece, uint8_t add_x, uint8_t add_y) {
 void piece_drawPiece(piece *piece, bool erase) {
   enum blocktype shape = erase ? X : piece->shape;
   for (uint8_t i = 0; i < 4; i++) {
-    printf("block drawn %d\n", shape);
     vec2d b = piece->blocks[i];
     board[piece->x + b.x][piece->y + b.y].type = shape;
   }
 }
 
 // 0 = does not collide | 1 = colides with walls | 2 = collides down
-uint8_t doescollide(piece *piece, int check_x, int check_y) {
+uint8_t doescollide(piece *piece, int8_t check_x, int8_t check_y) {
   for (uint8_t i = 0; i < 4; i++) {
     vec2d b = piece->blocks[i];
 
     if (board[check_x + b.x][check_y + b.y].type != X ||
         check_y + b.y >= rows || check_x + b.x < 0 || check_x + b.x >= cols) {
-      return 1 + (check_y > 0);
+      return 1 + (int)(check_y > piece->y);
     }
   }
   return 0;

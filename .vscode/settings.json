@@ -9,5 +9,6 @@
     "C_Cpp.default.compilerPath": "/usr/bin/clang",
     "files.associations": {
         "intervaltimer.h": "c"
-    }
+    },
+    "cmake.configureOnOpen": false
 }

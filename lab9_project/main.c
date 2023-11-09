@@ -1,3 +1,4 @@
+#include "display.h"
 #include "gameControl.h"
 #include "global.h"
 #include "interrupts.h"
@@ -25,6 +26,30 @@ static void isr() {
 }
 
 int main() {
+
+  display_init();
+  display_fillScreen(DISPLAY_DARK_BLUE);
+
+  display_setTextColor(DISPLAY_WHITE);
+  display_setTextSize(2);
+
+  // Set the cursor location and print to the LCD
+  display_setCursor(50, 120);
+  display_println("Welcome to Tetris!");
+  display_setCursor(13, 140);
+  display_println("Left  Down  Rot.  Right");
+  display_setCursor(10, 160);
+  display_println("  O     O     O     O  ");
+  display_setCursor(10, 180);
+  display_println("Try and get a High score!");
+
+  intervalTimer_initCountUp(INTERVAL_TIMER_1);
+  intervalTimer_start(INTERVAL_TIMER_1);
+  while (intervalTimer_getTotalDurationInSeconds(INTERVAL_TIMER_1) < 5.0) {
+    ;
+  }
+  intervalTimer_stop(INTERVAL_TIMER_1);
+
   // Initialize Modules
   gameControl_init(TICK_PERIOD);
 

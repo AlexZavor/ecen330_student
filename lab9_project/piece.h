@@ -18,10 +18,10 @@ typedef struct {
 void piece_init(piece *piece, enum blocktype setShape, int start_x,
                 int start_y);
 
-bool piece_tick(piece *piece, uint8_t add_x, uint8_t add_y);
+bool piece_tick(piece *piece, int8_t add_x, int8_t add_y);
 
 void piece_drawPiece(piece *piece, bool erase);
 
-uint8_t doescollide(piece *piece, int check_x, int check_y);
+uint8_t doescollide(piece *piece, int8_t check_x, int8_t check_y);
 
 #endif

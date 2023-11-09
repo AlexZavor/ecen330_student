@@ -10,9 +10,13 @@
 static piece currentPiece;
 static piece nextPiece;
 
+// Timing
 static double tick_time;
 static double piece_tick_time;
 static double piece_tick_timer;
+
+// Input
+static bool pressed;
 
 // Helper function checking through each row to see if it has been cleared and
 // fixes the board to refelct changes Returns the number of rows cleared
@@ -115,8 +119,8 @@ void gameControl_init(double period_s) {
   // initialize buttons
   buttons_init();
   // Clear screen
-  display_init();
   display_fillScreen(DISPLAY_BLACK);
+  display_drawRect(0, 0, 123, 240, DISPLAY_MAGENTA);
 
   // set board to empty
   for (int col = 0; col < cols; col++) {
@@ -124,7 +128,6 @@ void gameControl_init(double period_s) {
       board[col][row].type = X;
     }
   }
-
 
   // std::srand(int(std::time(nullptr)));
   piece_init(&nextPiece, rand() % 7, 4, 0);
@@ -138,14 +141,29 @@ void gameControl_init(double period_s) {
 void gameControl_tick() {
 
   // Check for inputs
-  if (buttons_read()) {
-    printf("HIT\n");
+  uint8_t buttons = buttons_read();
+  if (!buttons) {
+    pressed = false;
+  } else if ((buttons & 0x08) && !pressed) {
+    // Left
+    pressed = true;
+    piece_tick(&currentPiece, -1, 0);
+  } else if ((buttons & 0x04)) {
+    // Mid Left
+    piece_tick_timer = piece_tick_time;
+  } else if ((buttons & 0x02) && !pressed) {
+    // Mid Right
+    // Rotate piece 1
+    pressed = true;
+  } else if ((buttons & 0x01) && !pressed) {
+    // Right
+    pressed = true;
+    piece_tick(&currentPiece, 1, 0);
   }
 
   // wait for piece tick timer
   piece_tick_timer += tick_time;
   if (piece_tick_timer >= piece_tick_time) {
-    // Check that we have a current piece, make piece, else tick current piece
     piece_tick_timer = 0;
 
     // first round logic
@@ -163,8 +181,6 @@ void gameControl_tick() {
 
   // Check for cleared rows
   lines += checkRowClear();
-
-  display_drawRect(0, 0, 84, 164, DISPLAY_MAGENTA);
 
   // Draw board
   for (int x = 0; x < cols; x++) {
@@ -203,7 +219,7 @@ void gameControl_tick() {
         break;
       }
 
-      display_drawRect((x * 8 + 2), (y * 8 + 2), 7, 7, color);
+      display_drawRect((x * 12 + 2), (y * 12 + 2), 11, 11, color);
       // display_drawRect((x * 8 + 3), (y * 8 + 3), 5, 5, color);
       // display_drawRect((x * 8 + 4), (y * 8 + 4), 3, 3, color);
       // }
