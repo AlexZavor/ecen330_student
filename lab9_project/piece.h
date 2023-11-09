@@ -1,0 +1,26 @@
+#ifndef PIECE
+#define PIECE
+
+#include "block.h"
+#include "vec2d.h"
+#include <stdbool.h>
+
+// piece moving
+typedef struct {
+  enum blocktype shape;
+  vec2d blocks[4];
+  int x;
+  int y;
+  int rot;
+} piece;
+
+void piece_init(piece *piece, enum blocktype setShape, int start_x,
+                int start_y);
+
+bool piece_tick(piece *piece, uint8_t add_x, uint8_t add_y);
+
+void piece_drawPiece(piece *piece, bool erase);
+
+uint8_t doescollide(piece *piece, int check_x, int check_y);
+
+#endif

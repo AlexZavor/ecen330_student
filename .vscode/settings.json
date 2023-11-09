@@ -6,5 +6,8 @@
         "editor.formatOnSave": true,
     },
     "C_Cpp.clang_format_fallbackStyle": "LLVM",
-    "C_Cpp.default.compilerPath": "/usr/bin/clang"
+    "C_Cpp.default.compilerPath": "/usr/bin/clang",
+    "files.associations": {
+        "intervaltimer.h": "c"
+    }
 }
