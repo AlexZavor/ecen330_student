@@ -6,6 +6,16 @@
 
 #define TICK_PERIOD 50E-3
 
+// global vars
+int score = 0;
+int lvl = 0;
+int lines = 0;
+bool game = true;
+
+// Play board
+block board[10][20];
+block nextPieceBoard[4][4];
+
 // Interrupt flag method
 volatile bool interrupt_flag;
 // Interrupt routine

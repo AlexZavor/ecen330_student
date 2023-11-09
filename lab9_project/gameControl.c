@@ -1,4 +1,5 @@
 #include "buttons.h"
+#include "display.h"
 #include "global.h"
 #include "piece.h"
 #include <stdint.h>
@@ -74,37 +75,48 @@ static uint8_t checkRowClear() {
 // Helper function that transitions the next piece to the new piece and creates
 // a new next piece
 static void setNewPiece() {
-  currentPiece = nextPiece;
+  for (uint8_t i = 0; i < 4; i++) {
+    currentPiece.blocks[i] = nextPiece.blocks[i];
+  }
+  currentPiece.rot = nextPiece.rot;
+  currentPiece.shape = nextPiece.shape;
+  currentPiece.x = nextPiece.x;
+  currentPiece.y = nextPiece.y;
   // make next piece
   piece_init(&nextPiece, rand() % 7, 4, 0);
   // clear next piece board
-  for (uint8_t x = 0; x < 4; x++) {
-    for (uint8_t y = 0; y < 4; y++) {
-      nextPieceBoard[x][y].type = X;
-    }
-  }
-  // draw next piece
-  for (uint8_t i = 0; i < 4; i++) {
-    vec2d b = nextPiece.blocks[i];
-    nextPieceBoard[b.x][b.y].type = nextPiece.shape;
-  }
+  // for (uint8_t x = 0; x < 4; x++) {
+  //   for (uint8_t y = 0; y < 4; y++) {
+  //     nextPieceBoard[x][y].type = X;
+  //   }
+  // }
+  // // draw next piece
+  // for (uint8_t i = 0; i < 4; i++) {
+  //   vec2d b = nextPiece.blocks[i];
+  //   nextPieceBoard[b.x][b.y].type = nextPiece.shape;
+  // }
   // check for a game over
-  if (doescollide(&currentPiece, 4, 0, 0)) {
+  if (doescollide(&currentPiece, 4, 0)) {
     game = false;
     for (uint8_t x = 0; x < cols; x++) {
       for (uint8_t y = 0; y < rows; y++) {
         board[x][y].type = X;
       }
     }
+    printf("game ended\n");
   } else {
     // draw new piece
-    drawPiece(&currentPiece, false);
+    printf("new Piece\n");
+    piece_drawPiece(&currentPiece, false);
   }
 }
 
 void gameControl_init(double period_s) {
   // initialize buttons
   buttons_init();
+  // Clear screen
+  display_init();
+  display_fillScreen(DISPLAY_BLACK);
 
   // set board to empty
   for (int col = 0; col < cols; col++) {
@@ -112,6 +124,7 @@ void gameControl_init(double period_s) {
       board[col][row].type = X;
     }
   }
+
 
   // std::srand(int(std::time(nullptr)));
   piece_init(&nextPiece, rand() % 7, 4, 0);
@@ -123,7 +136,6 @@ void gameControl_init(double period_s) {
 }
 
 void gameControl_tick() {
-  // printf("tick\n");
 
   // Check for inputs
   if (buttons_read()) {
@@ -151,8 +163,52 @@ void gameControl_tick() {
 
   // Check for cleared rows
   lines += checkRowClear();
-  // Draw board
 
+  display_drawRect(0, 0, 84, 164, DISPLAY_MAGENTA);
+
+  // Draw board
+  for (int x = 0; x < cols; x++) {
+    for (int y = 0; y < rows; y++) {
+      block currentblock = board[x][y];
+      // if (currentblock.type != X) {
+      uint16_t color;
+
+      switch (currentblock.type) {
+      case Z:
+        color = DISPLAY_RED;
+        break;
+      case S:
+        color = DISPLAY_GREEN;
+        break;
+      case T:
+        color = DISPLAY_MAGENTA;
+        break;
+      case O:
+        color = DISPLAY_YELLOW;
+        break;
+      case I:
+        color = DISPLAY_CYAN;
+        break;
+      case L:
+        color = DISPLAY_DARK_YELLOW;
+        break;
+      case J:
+        color = DISPLAY_DARK_BLUE;
+        break;
+      case X:
+        color = DISPLAY_BLACK;
+        break;
+      default:
+        printf("somethingwrong\n");
+        break;
+      }
+
+      display_drawRect((x * 8 + 2), (y * 8 + 2), 7, 7, color);
+      // display_drawRect((x * 8 + 3), (y * 8 + 3), 5, 5, color);
+      // display_drawRect((x * 8 + 4), (y * 8 + 4), 3, 3, color);
+      // }
+    }
+  }
   // Draw accessorys
 
   // Update Data

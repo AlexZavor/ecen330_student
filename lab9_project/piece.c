@@ -1,6 +1,7 @@
 #include "piece.h"
 #include "display.h"
 #include "global.h"
+#include <stdio.h>
 
 void piece_init(piece *piece, enum blocktype setShape, int start_x,
                 int start_y) {
@@ -62,30 +63,39 @@ void piece_init(piece *piece, enum blocktype setShape, int start_x,
 
 bool piece_tick(piece *piece, uint8_t add_x, uint8_t add_y) {
   // erase previous shape
-  drawPiece(piece, true);
+  piece_drawPiece(piece, true);
   // collisoin check
   int collide = doescollide(piece, piece->x + add_x, piece->y + add_y);
   if (collide == 2) {
-    drawPiece(piece, false);
+    piece_drawPiece(piece, false);
     piece->shape = X;
     return 0; // return 0 to make it stop updating
   } else if (collide == 1) {
-    drawPiece(piece, false);
+    // Updated into a wall. Just don't do anything
+    piece_drawPiece(piece, false);
     return 1;
   } else {
     piece->x += add_x;
     piece->y += add_y;
     // place new shape
-    drawPiece(piece, false);
+    printf("test\n");
+    piece_drawPiece(piece, false);
   }
   return 1;
 }
 
-void piece_drawPiece(piece *piece, bool erase) {}
+void piece_drawPiece(piece *piece, bool erase) {
+  enum blocktype shape = erase ? X : piece->shape;
+  for (uint8_t i = 0; i < 4; i++) {
+    printf("block drawn %d\n", shape);
+    vec2d b = piece->blocks[i];
+    board[piece->x + b.x][piece->y + b.y].type = shape;
+  }
+}
 
 // 0 = does not collide | 1 = colides with walls | 2 = collides down
 uint8_t doescollide(piece *piece, int check_x, int check_y) {
-  for (int i = 0; i < 4; i++) {
+  for (uint8_t i = 0; i < 4; i++) {
     vec2d b = piece->blocks[i];
 
     if (board[check_x + b.x][check_y + b.y].type != X ||

@@ -8,14 +8,14 @@
 static const char stuck[] = {0x50, 111, 109, 110, 105, 0};
 
 // global vars
-static int score = 0;
-static int lvl = 0;
-static int lines = 0;
-static bool game = true;
+extern int score;
+extern int lvl;
+extern int lines;
+extern bool game;
 
 // Play board
-static block board[10][20];
-static block nextPieceBoard[4][4];
+extern block board[10][20];
+extern block nextPieceBoard[4][4];
 static int cols = 10;
 static int rows = 20;
 

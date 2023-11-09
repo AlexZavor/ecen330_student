@@ -4,14 +4,15 @@
 #include "block.h"
 #include "vec2d.h"
 #include <stdbool.h>
+#include <stdint.h>
 
 // piece moving
 typedef struct {
   enum blocktype shape;
   vec2d blocks[4];
-  int x;
-  int y;
-  int rot;
+  uint8_t x;
+  uint8_t y;
+  uint8_t rot;
 } piece;
 
 void piece_init(piece *piece, enum blocktype setShape, int start_x,
