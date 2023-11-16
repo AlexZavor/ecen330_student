@@ -16,6 +16,9 @@ static double tick_time;
 static double piece_tick_time;
 static double piece_tick_timer;
 
+int prevscore;
+int prevlvl;
+
 // Input
 static bool pressed;
 
@@ -190,6 +193,8 @@ void gameControl_init(double period_s) {
   tick_time = period_s;
   piece_tick_time = 1 - (lvl * .05);
   piece_tick_timer = 0;
+  prevscore = -1;
+  prevlvl = -1;
 }
 
 void gameControl_tick() {
@@ -286,8 +291,6 @@ void gameControl_tick() {
   // Draw accessorys
 
   // Update Data
-  static int prevscore = -1;
-  static int prevlvl = -1;
   lvl = lines / 10;
   piece_tick_time = 1 - (lvl * .05);
 
