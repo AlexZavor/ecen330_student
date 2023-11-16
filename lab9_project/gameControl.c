@@ -1,6 +1,7 @@
 #include "buttons.h"
 #include "display.h"
 #include "global.h"
+#include "intervalTimer.h"
 #include "piece.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -89,18 +90,60 @@ static void setNewPiece() {
   // make next piece
   piece_init(&nextPiece, rand() % 7, 4, 0);
   // clear next piece board
-  // for (uint8_t x = 0; x < 4; x++) {
-  //   for (uint8_t y = 0; y < 4; y++) {
-  //     nextPieceBoard[x][y].type = X;
-  //   }
-  // }
-  // // draw next piece
-  // for (uint8_t i = 0; i < 4; i++) {
-  //   vec2d b = nextPiece.blocks[i];
-  //   nextPieceBoard[b.x][b.y].type = nextPiece.shape;
-  // }
+  for (uint8_t x = 0; x < 4; x++) {
+    for (uint8_t y = 0; y < 4; y++) {
+      nextPieceBoard[x][y].type = X;
+    }
+  }
+  // draw next piece
+  for (uint8_t i = 0; i < 4; i++) {
+    vec2d b = nextPiece.blocks[i];
+    nextPieceBoard[b.x][b.y].type = nextPiece.shape;
+  }
+  // draw next piece
+  for (int x = 0; x < 4; x++) {
+    for (int y = 0; y < 3; y++) {
+      block currentblock = nextPieceBoard[x][y];
+      uint16_t color;
+
+      switch (currentblock.type) {
+      case Z:
+        color = DISPLAY_RED;
+        break;
+      case S:
+        color = DISPLAY_GREEN;
+        break;
+      case T:
+        color = DISPLAY_MAGENTA;
+        break;
+      case O:
+        color = DISPLAY_YELLOW;
+        break;
+      case I:
+        color = DISPLAY_CYAN;
+        break;
+      case L:
+        color = ORANGE;
+        break;
+      case J:
+        color = DISPLAY_BLUE;
+        break;
+      case X:
+        color = DISPLAY_BLACK;
+        break;
+      default:
+        printf("somethingwrong\n");
+        break;
+      }
+
+      display_drawRect((x * 12 + 150), (y * 12 + 180), 11, 11, color);
+      // DrawRect((x * 8 + 111), (y * 8 + 91), 5, 5,
+      //          color - AC::Pixel(70, 70, 70));
+      // DrawRect((x * 8 + 112), (y * 8 + 92), 3, 3, color);
+    }
+  }
   // check for a game over
-  if (doescollide(&currentPiece, 4, 0)) {
+  if (piece_doescollide(&currentPiece, 4, 0)) {
     game = false;
     for (uint8_t x = 0; x < cols; x++) {
       for (uint8_t y = 0; y < rows; y++) {
@@ -121,15 +164,26 @@ void gameControl_init(double period_s) {
   // Clear screen
   display_fillScreen(DISPLAY_BLACK);
   display_drawRect(0, 0, 123, 240, DISPLAY_MAGENTA);
+  display_drawRect(148, 178, 52, 38, DISPLAY_MAGENTA);
+  display_setTextColor(DISPLAY_WHITE);
+  display_setTextSize(2);
+
+  display_setCursor(133, 100);
+  display_print("Score:");
+  display_setCursor(133, 120);
+  display_print("Level:");
+  display_setCursor(133, 140);
+  display_print("Next Piece:");
 
   // set board to empty
   for (int col = 0; col < cols; col++) {
     for (int row = 0; row < rows; row++) {
       board[col][row].type = X;
+      prevBoard[col][row].type = X;
     }
   }
 
-  // std::srand(int(std::time(nullptr)));
+  srand(intervalTimer_getTotalDurationInSeconds(INTERVAL_TIMER_1));
   piece_init(&nextPiece, rand() % 7, 4, 0);
   piece_init(&currentPiece, X, 4, 0);
 
@@ -151,9 +205,11 @@ void gameControl_tick() {
   } else if ((buttons & 0x04)) {
     // Mid Left
     piece_tick_timer = piece_tick_time;
+    score++;
   } else if ((buttons & 0x02) && !pressed) {
     // Mid Right
     // Rotate piece 1
+    piece_rotate(&currentPiece, 1);
     pressed = true;
   } else if ((buttons & 0x01) && !pressed) {
     // Right
@@ -173,61 +229,87 @@ void gameControl_tick() {
     } else {
       // tick the current piece
       if (!piece_tick(&currentPiece, 0, 1)) {
-        // if it fails to update then make new current piece
+        // if it fails to update then check and make new current piece
+        // Check for cleared rows
+        lines += checkRowClear();
         setNewPiece();
       }
     }
   }
 
-  // Check for cleared rows
-  lines += checkRowClear();
-
   // Draw board
   for (int x = 0; x < cols; x++) {
     for (int y = 0; y < rows; y++) {
       block currentblock = board[x][y];
-      // if (currentblock.type != X) {
-      uint16_t color;
+      block prevblock = prevBoard[x][y];
+      if (currentblock.type != prevblock.type) {
+        prevBoard[x][y].type = currentblock.type;
+        uint16_t color;
 
-      switch (currentblock.type) {
-      case Z:
-        color = DISPLAY_RED;
-        break;
-      case S:
-        color = DISPLAY_GREEN;
-        break;
-      case T:
-        color = DISPLAY_MAGENTA;
-        break;
-      case O:
-        color = DISPLAY_YELLOW;
-        break;
-      case I:
-        color = DISPLAY_CYAN;
-        break;
-      case L:
-        color = DISPLAY_DARK_YELLOW;
-        break;
-      case J:
-        color = DISPLAY_DARK_BLUE;
-        break;
-      case X:
-        color = DISPLAY_BLACK;
-        break;
-      default:
-        printf("somethingwrong\n");
-        break;
+        switch (currentblock.type) {
+        case Z:
+          color = DISPLAY_RED;
+          break;
+        case S:
+          color = DISPLAY_GREEN;
+          break;
+        case T:
+          color = DISPLAY_MAGENTA;
+          break;
+        case O:
+          color = DISPLAY_YELLOW;
+          break;
+        case I:
+          color = DISPLAY_CYAN;
+          break;
+        case L:
+          color = ORANGE;
+          break;
+        case J:
+          color = DISPLAY_BLUE;
+          break;
+        case X:
+          color = DISPLAY_BLACK;
+          break;
+        default:
+          printf("somethingwrong\n");
+          break;
+        }
+
+        display_drawRect((x * 12 + 2), (y * 12 + 2), 11, 11, color);
+        // display_drawRect((x * 8 + 3), (y * 8 + 3), 5, 5, color);
+        // display_drawRect((x * 8 + 4), (y * 8 + 4), 3, 3, color);
       }
-
-      display_drawRect((x * 12 + 2), (y * 12 + 2), 11, 11, color);
-      // display_drawRect((x * 8 + 3), (y * 8 + 3), 5, 5, color);
-      // display_drawRect((x * 8 + 4), (y * 8 + 4), 3, 3, color);
-      // }
     }
   }
+
   // Draw accessorys
 
   // Update Data
+  static int prevscore = -1;
+  static int prevlvl = -1;
   lvl = lines / 10;
   piece_tick_time = 1 - (lvl * .05);
+
+  display_setTextSize(2);
+
+  if (prevscore != score) {
+    display_setTextColor(DISPLAY_BLACK);
+    display_setCursor(210, 100);
+    display_printDecimalInt(prevscore);
+    prevscore = score;
+    display_setTextColor(DISPLAY_WHITE);
+    display_setCursor(210, 100);
+    display_printDecimalInt(score);
+  }
+
+  if (prevlvl != lvl) {
+    display_setTextColor(DISPLAY_BLACK);
+    display_setCursor(210, 120);
+    display_printDecimalInt(prevlvl + 1);
+    prevlvl = lvl;
+    display_setTextColor(DISPLAY_WHITE);
+    display_setCursor(210, 120);
+    display_printDecimalInt(lvl + 1);
+  }
 }

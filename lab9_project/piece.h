@@ -22,6 +22,8 @@ bool piece_tick(piece *piece, int8_t add_x, int8_t add_y);
 
 void piece_drawPiece(piece *piece, bool erase);
 
-uint8_t doescollide(piece *piece, int8_t check_x, int8_t check_y);
+uint8_t piece_doescollide(piece *piece, int8_t check_x, int8_t check_y);
+
+uint8_t piece_rotate(piece *piece, int8_t rotation);
 
 #endif
