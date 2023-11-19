@@ -105,7 +105,7 @@ static void setNewPiece() {
   }
   // draw next piece
   for (int x = 0; x < 4; x++) {
-    for (int y = 0; y < 3; y++) {
+    for (int y = 0; y < 2; y++) {
       block currentblock = nextPieceBoard[x][y];
       uint16_t color;
 
@@ -166,10 +166,12 @@ void gameControl_init(double period_s) {
   buttons_init();
   // Clear screen
   display_fillScreen(DISPLAY_BLACK);
-  display_drawRect(0, 0, 123, 240, DISPLAY_MAGENTA);
-  display_drawRect(148, 178, 52, 38, DISPLAY_MAGENTA);
+  display_drawRect(0, 0, 123, 244, DISPLAY_MAGENTA);
+  display_drawRect(148, 178, 52, 28, DISPLAY_MAGENTA);
   display_setTextColor(DISPLAY_WHITE);
   display_setTextSize(2);
+
+  display_drawBitmap(140, -20, TetrisLogo, 160, 120, DISPLAY_WHITE);
 
   display_setCursor(133, 100);
   display_print("Score:");

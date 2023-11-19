@@ -72,8 +72,7 @@ gameStart:
   display_setTextSize(2);
 
   // Set the cursor location and print to the LCD
-  display_setCursor(50, 120);
-  display_println("Welcome to Tetris!");
+  display_drawBitmap(80,0,TetrisLogo, 160,120, DISPLAY_RED);
   display_setCursor(13, 140);
   display_println("Left  Down  Rot.  Right");
   display_setCursor(10, 160);
