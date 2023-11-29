@@ -139,7 +139,7 @@ static void setNewPiece() {
         break;
       }
 
-      display_drawRect((x * 12 + 150), (y * 12 + 180), 11, 11, color);
+      display_drawRect((x * 12 + 160), (y * 12 + 180), 11, 11, color);
       // DrawRect((x * 8 + 111), (y * 8 + 91), 5, 5,
       //          color - AC::Pixel(70, 70, 70));
       // DrawRect((x * 8 + 112), (y * 8 + 92), 3, 3, color);
@@ -166,8 +166,8 @@ void gameControl_init(double period_s) {
   buttons_init();
   // Clear screen
   display_fillScreen(DISPLAY_BLACK);
-  display_drawRect(0, 0, 123, 244, DISPLAY_MAGENTA);
-  display_drawRect(148, 178, 52, 28, DISPLAY_MAGENTA);
+  display_drawRect(0, 0, 123, 244, DISPLAY_WHITE);
+  // display_drawRect(148, 178, 52, 28, ORANGE);
   display_setTextColor(DISPLAY_WHITE);
   display_setTextSize(2);
 

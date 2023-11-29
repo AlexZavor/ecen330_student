@@ -36,14 +36,14 @@ static void drawGameOver() {
   display_println("GAME OVER");
 
   display_setTextColor(DISPLAY_WHITE);
+  display_setTextSize(1);
+  display_setCursor(75, 132);
+  display_print("press any button to restart");
+
   display_setTextSize(3);
-  display_setCursor(80, 180);
+  display_setCursor(80, 190);
   display_print("Score:");
   display_printDecimalInt(score);
-
-  display_setTextSize(1);
-  display_setCursor(65, 210);
-  display_print("press any button to restart");
 
   intervalTimer_initCountUp(INTERVAL_TIMER_1);
   intervalTimer_start(INTERVAL_TIMER_1);
@@ -72,12 +72,18 @@ gameStart:
   display_setTextSize(2);
 
   // Set the cursor location and print to the LCD
-  display_drawBitmap(80,0,TetrisLogo, 160,120, DISPLAY_RED);
-  display_setCursor(13, 140);
-  display_println("Left  Down  Rot.  Right");
-  display_setCursor(10, 160);
-  display_println("  O     O     O     O  ");
-  display_setCursor(10, 180);
+  display_drawBitmap(80, 0, TetrisLogo, 160, 120, DISPLAY_RED);
+  display_setCursor(32, 125);
+  display_println("Left  Down  Rot. Right");
+  display_fillCircle(64, 165, 12, DISPLAY_BLACK);
+  display_drawCircle(64, 165, 12, DISPLAY_WHITE);
+  display_fillCircle(128, 165, 12, DISPLAY_BLACK);
+  display_drawCircle(128, 165, 12, DISPLAY_WHITE);
+  display_fillCircle(192, 165, 12, DISPLAY_BLACK);
+  display_drawCircle(192, 165, 12, DISPLAY_WHITE);
+  display_fillCircle(256, 165, 12, DISPLAY_BLACK);
+  display_drawCircle(256, 165, 12, DISPLAY_WHITE);
+  display_setCursor(10, 216);
   display_println("Try and get a High score!");
 
   // display_drawBitmap(0,0,,360,120,DISPLAY_RED);
